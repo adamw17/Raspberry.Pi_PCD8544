@@ -59,6 +59,25 @@ Lesser General Public License for more details.
 #define LSBFIRST  0
 #define MSBFIRST  1
 
+typedef struct _PCDstruct{
+  uint8_t _din;
+  uint8_t _sclk;
+  uint8_t _dc;
+  uint8_t _rst;
+  uint8_t _cs;
+
+  uint8_t cursor_x;
+  uint8_t cursor_y;
+  uint8_t textsize;
+  uint8_t textcolor;
+  uint8_t contrast;
+  // the memory buffer for the LCD
+  uint8_t pcd8544_buffer[LCDWIDTH * LCDHEIGHT / 8]; // = {0,};
+} pcdstruct;
+
+typedef pcdstruct * pcdstruct_ptr;
+
+
  void LCDInit(pcdstruct_ptr pcd, uint8_t SCLK, uint8_t DIN, uint8_t DC, uint8_t CS, uint8_t RST, uint8_t contrast);
  void LCDcommand(pcdstruct_ptr pcd, uint8_t c);
  void LCDdata(pcdstruct_ptr pcd, uint8_t c);

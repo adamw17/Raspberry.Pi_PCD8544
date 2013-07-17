@@ -54,24 +54,6 @@ Lesser General Public License for more details.
 /*static uint8_t cursor_x, cursor_y, textsize, textcolor;
 static int8_t _din, _sclk, _dc, _rst, _cs;*/
 
-typedef struct _PCDstruct{
-  uint8_t _din,
-  uint8_t _sclk,
-  uint8_t _dc,
-  uint8_t _rst,
-  uint8_t _cs,
-
-  uint8_t cursor_x,
-  uint8_t cursor_y,
-  uint8_t textsize,
-  uint8_t textcolor,
-  uint8_t contrast,
-  // the memory buffer for the LCD
-  uint8_t pcd8544_buffer[LCDWIDTH * LCDHEIGHT / 8] = {0,};
-} pcdstruct;
-
-typedef pcdstruct * pcdstruct_ptr;
-
 // font bitmap
 static unsigned char  font[] = {
 		0x00, 0x00, 0x00, 0x00, 0x00,
@@ -408,7 +390,7 @@ static void updateBoundingBox(uint8_t xmin, uint8_t ymin, uint8_t xmax, uint8_t 
 }
 
 pcdstruct_ptr LCDNew(){
-  pcdsturct_ptr pcd = malloc(sizeof(pcdstruct));
+  pcdstruct_ptr pcd = (pcdstruct_ptr) calloc(1,sizeof(pcdstruct));
   return pcd;
 }
 
@@ -513,18 +495,18 @@ void LCDdrawchar(pcdstruct_ptr pcd, uint8_t x, uint8_t y, char c)
 		{
 			if (d & _BV(j))
 			{
-				my_setpixel(pcd, x+i, y+j, textcolor);
+				my_setpixel(pcd, x+i, y+j, pcd->textcolor);
 			}
 			else
 			{
-				my_setpixel(pcd, x+i, y+j, !textcolor);
+				my_setpixel(pcd, x+i, y+j, !pcd->textcolor);
 			}
 		}
 	}
 
 	for ( j = 0; j<8; j++)
 	{
-		my_setpixel(pcd, x+5, y+j, !textcolor);
+		my_setpixel(pcd, x+5, y+j, !pcd->textcolor);
 	}
 	updateBoundingBox(x, y, x+5, y + 8);
 }
@@ -533,7 +515,7 @@ void LCDwrite(pcdstruct_ptr pcd, uint8_t c)
 {
 	if (c == '\n')
 	{
-		pcd->cursor_y += textsize*8;
+		pcd->cursor_y += pcd->textsize*8;
 		pcd->cursor_x = 0;
 	}
 	else if (c == '\r')
@@ -811,7 +793,7 @@ void LCDdisplay(pcdstruct_ptr pcd)
 		for(; col <= maxcol; col++) {
 			//uart_putw_dec(col);
 			//uart_putchar(' ');
-			LCDdata(pcd, pcd8544_buffer[(LCDWIDTH*p)+col]);
+			LCDdata(pcd, pcd->pcd8544_buffer[(LCDWIDTH*p)+col]);
 		}
 	}
 
