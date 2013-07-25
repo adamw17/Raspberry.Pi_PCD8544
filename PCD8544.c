@@ -42,6 +42,7 @@ Lesser General Public License for more details.
 ================================================================================
  */
 #include <wiringPi.h>
+#include <stdlib.h>
 #include "PCD8544.h"
 
 // An abs() :)
@@ -394,6 +395,11 @@ pcdstruct_ptr LCDNew(){
   return pcd;
 }
 
+void LCDFree(pcdstruct_ptr pcd){
+	if(pcd!=NULL)
+		free(pcd);
+}
+
 void LCDInit(pcdstruct_ptr pcd, uint8_t SCLK, uint8_t DIN, uint8_t DC, uint8_t CS, uint8_t RST, uint8_t contrast)
 {
 	pcd->_din = DIN;
@@ -452,7 +458,7 @@ void LCDdrawbitmap(pcdstruct_ptr pcd,uint8_t x, uint8_t y,const uint8_t *bitmap,
 		{
 			if (*(bitmap + i + (j/8)*w) & _BV(j%8))
 			{
-				my_setpixel(pcd, x+i, y+j, pcd->color);
+				my_setpixel(pcd, x+i, y+j, color);
 			}
 		}
 	}

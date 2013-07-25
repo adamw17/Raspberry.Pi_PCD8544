@@ -78,6 +78,8 @@ typedef struct _PCDstruct{
 typedef pcdstruct * pcdstruct_ptr;
 
 
+pcdstruct_ptr LCDNew(void);
+void LCDFree(pcdstruct_ptr pcd);
  void LCDInit(pcdstruct_ptr pcd, uint8_t SCLK, uint8_t DIN, uint8_t DC, uint8_t CS, uint8_t RST, uint8_t contrast);
  void LCDcommand(pcdstruct_ptr pcd, uint8_t c);
  void LCDdata(pcdstruct_ptr pcd, uint8_t c);
