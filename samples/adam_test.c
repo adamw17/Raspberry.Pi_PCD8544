@@ -45,14 +45,22 @@ int _din = 1;
 int _sclk = 0;
 int _dc = 2;
 int _rst = 4;
-int _cs = 3;
+int _cs1 = 3;
+int _cs2 = 5;
   
 // lcd contrast 
 int contrast = 50;
   
 int main (void)
 {
-  pcdstruct_ptr pcd = NULL;
+  //pcdstruct _screen1 = {0};
+  //pcdstruct _screen2 = {0};
+
+  pcdstruct_ptr screen1 = NULL;
+  pcdstruct_ptr screen2 = NULL;
+
+  LCDNew(&screen1);
+  LCDNew(&screen2);
   
   // check wiringPi setup
   if (wiringPiSetup() == -1)
@@ -61,101 +69,188 @@ int main (void)
     exit(1);
   }
 
-/*  // print infos
-  printf("Raspberry Pi PCD8544 test\n");
-  printf("========================================\n");
-  
-  printf("CLK on Port %i \n", _sclk);
-  printf("DIN on Port %i \n", _din);
-  printf("DC on Port %i \n", _dc);
-  printf("CS on Port %i \n", _cs);
-  printf("RST on Port %i \n", _rst);  
-  printf("========================================\n");
-*/
-
-  pcd = LCDNew();
   // init and clear lcd
-  LCDInit(pcd,_sclk, _din, _dc, _cs, _rst, contrast);
-  LCDclear(pcd);
+  LCDInit(screen1,_sclk, _din, _dc, _cs1, _rst, contrast);
+  // init and clear lcd
+  LCDcommand(screen1,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYALLON);
+delay(1000);
+  LCDInit(screen2,_sclk, _din, _dc, _cs2, _rst, contrast-25);
 
   // turn all the pixels on (a handy test)
   printf("Test: All pixels on.\n");
-  LCDcommand(pcd,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYALLON);
+  LCDcommand(screen1,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYALLON);
+  LCDdisplay(screen1);
   delay(1000);
+
+  // turn all the pixels on (a handy test)
+  printf("Test: All pixels on.\n");
+  LCDcommand(screen2,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYALLON);
+  LCDdisplay(screen2);
+  delay(1000);
+
   // back to normal
   printf("Test: All pixels off.\n");
-  LCDcommand(pcd,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYNORMAL);
-  LCDclear(pcd);
+  LCDcommand(screen1,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYNORMAL);
+  LCDclear(screen1);
+  LCDdisplay(screen1);
+
+  // back to normal
+  printf("Test: All pixels off.\n");
+  LCDcommand(screen2,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYNORMAL);
+  LCDclear(screen2);
+  LCDdisplay(screen2);
   
   // display logo
   printf("Test: Display logo.\n");
-  LCDshowLogo(pcd);
+  LCDshowLogo(screen1);
   delay(2000);
-  LCDclear(pcd);
+  LCDclear(screen1);
+  LCDdisplay(screen1);
+  
+  // display logo
+  printf("Test: Display logo.\n");
+  LCDshowLogo(screen2);
+  delay(2000);
+  LCDclear(screen2);
+  LCDdisplay(screen2);
   
   // draw a single pixel
   printf("Test: Display single pixel.\n");
-  LCDsetPixel(pcd,10, 10, BLACK);
-  LCDdisplay(pcd);
+  LCDsetPixel(screen1,10, 10, BLACK);
+  LCDdisplay(screen1);
   delay(2000);
-  LCDclear(pcd);
+  LCDclear(screen1);
+  LCDdisplay(screen1);
+  
+  // draw a single pixel
+  printf("Test: Display single pixel.\n");
+  LCDsetPixel(screen2,10, 10, BLACK);
+  LCDdisplay(screen2);
+  delay(2000);
+  LCDclear(screen2);
+  LCDdisplay(screen2);
   
   // draw many lines
   printf("Test: Draw many lines.\n");
   int i;
   for (i=0; i<84; i+=4) {
-    LCDdrawline(pcd,0, 0, i, 47, BLACK);
+    LCDdrawline(screen1,0, 0, i, 47, BLACK);
   }  
   for (i=0; i<48; i+=4) {
-    LCDdrawline(pcd,0, 0, 83, i, BLACK);
+    LCDdrawline(screen1,0, 0, 83, i, BLACK);
   }
-  LCDdisplay(pcd);
+  LCDdisplay(screen1);
   delay(2000);
-  LCDclear(pcd);
+  LCDclear(screen1);
+  LCDdisplay(screen1);
+
+  // draw many lines
+  printf("Test: Draw many lines.\n");
+  for (i=0; i<84; i+=4) {
+    LCDdrawline(screen2,0, 0, i, 47, BLACK);
+  }  
+  for (i=0; i<48; i+=4) {
+    LCDdrawline(screen2,0, 0, 83, i, BLACK);
+  }
+  LCDdisplay(screen2);
+  delay(2000);
+  LCDclear(screen2);
+  LCDdisplay(screen2);
   
   // draw rectangles
   printf("Test: Draw rectangles.\n");
   for (i=0; i<48; i+=2) {
-    LCDdrawrect(pcd,i, i, 96-i, 48-i, BLACK);
+    LCDdrawrect(screen1,i, i, 96-i, 48-i, BLACK);
   }
-  LCDdisplay(pcd);
+  LCDdisplay(screen1);
   delay(2000);
-  LCDclear(pcd);
+  LCDclear(screen1);
+  LCDdisplay(screen1);
+  
+  // draw rectangles
+  printf("Test: Draw rectangles.\n");
+  for (i=0; i<48; i+=2) {
+    LCDdrawrect(screen2,i, i, 96-i, 48-i, BLACK);
+  }
+  LCDdisplay(screen2);
+  delay(2000);
+  LCDclear(screen2);
+  LCDdisplay(screen2);
   
   // draw multiple rectangles
   printf("Test: Draw multiple rectangles.\n");
   for (i=0; i<48; i++) {
     // alternate colors for moire effect
-    LCDfillrect(pcd,i, i, 84-i, 48-i, i%2);
+    LCDfillrect(screen1,i, i, 84-i, 48-i, i%2);
   }
-  LCDdisplay(pcd);
+  LCDdisplay(screen1);
   delay(2000);
-  LCDclear(pcd);
+  LCDclear(screen1);
+  LCDdisplay(screen1);
+  
+  // draw multiple rectangles
+  printf("Test: Draw multiple rectangles.\n");
+  for (i=0; i<48; i++) {
+    // alternate colors for moire effect
+    LCDfillrect(screen2,i, i, 84-i, 48-i, i%2);
+  }
+  LCDdisplay(screen2);
+  delay(2000);
+  LCDclear(screen2);
+  LCDdisplay(screen2);
   
   // draw mulitple circles
   printf("Test: Draw multiple circles.\n");
   for (i=0; i<48; i+=2) {
-    LCDdrawcircle(pcd,41, 23, i, BLACK);
+    LCDdrawcircle(screen1,41, 23, i, BLACK);
   }
-  LCDdisplay(pcd);
+  LCDdisplay(screen1);
   delay(2000);
-  LCDclear(pcd);
+  LCDclear(screen1);
+  LCDdisplay(screen1);
+
+  // draw mulitple circles
+  printf("Test: Draw multiple circles.\n");
+  for (i=0; i<48; i+=2) {
+    LCDdrawcircle(screen2,41, 23, i, BLACK);
+  }
+  LCDdisplay(screen2);
+  delay(2000);
+  LCDclear(screen2);
+  LCDdisplay(screen2);
   
   // draw the first ~120 characters in the font
   printf("Test: Draw the first ~120 chars.\n");
   for (i=0; i < 64; i++) {
-    LCDdrawchar(pcd,(i % 14) * 6, (i/14) * 8, i);
+    LCDdrawchar(screen1,(i % 14) * 6, (i/14) * 8, i);
   }    
-  LCDdisplay(pcd);
+  LCDdisplay(screen1);
   delay(2000);
   for (i=0; i < 64; i++) {
-    LCDdrawchar(pcd,(i % 14) * 6, (i/14) * 8, i + 64);
+    LCDdrawchar(screen1,(i % 14) * 6, (i/14) * 8, i + 64);
   }
-  LCDdisplay(pcd);
+  LCDdisplay(screen1);
   delay(2000);
-  LCDclear(pcd);
+  LCDclear(screen1);
+  LCDdisplay(screen1);
 
-  LCDFree(pcd);
+  // draw the first ~120 characters in the font
+  printf("Test: Draw the first ~120 chars.\n");
+  for (i=0; i < 64; i++) {
+    LCDdrawchar(screen2,(i % 14) * 6, (i/14) * 8, i);
+  }    
+  LCDdisplay(screen2);
+  delay(2000);
+  for (i=0; i < 64; i++) {
+    LCDdrawchar(screen2,(i % 14) * 6, (i/14) * 8, i + 64);
+  }
+  LCDdisplay(screen2);
+  delay(2000);
+  LCDclear(screen2);
+  LCDdisplay(screen2);
+
+  LCDFree(screen1);
+  LCDFree(screen2);
   
   return 0;
 }

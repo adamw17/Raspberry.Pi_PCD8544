@@ -55,6 +55,8 @@ Lesser General Public License for more details.
 /*static uint8_t cursor_x, cursor_y, textsize, textcolor;
 static int8_t _din, _sclk, _dc, _rst, _cs;*/
 
+static uint8_t doinit = 0;
+
 // font bitmap
 static unsigned char  font[] = {
 		0x00, 0x00, 0x00, 0x00, 0x00,
@@ -356,7 +358,7 @@ const uint8_t pi_logo [] = {
 // originally derived from Steve Evans/JCW's mod but cleaned up and optimized
 //#define enablePartialUpdate
 
-static void my_setpixel(pcdstruct_ptr pcd ,uint8_t x, uint8_t y, uint8_t color)
+void my_setpixel(pcdstruct_ptr pcd ,uint8_t x, uint8_t y, uint8_t color)
 {
 	if ((x >= LCDWIDTH) || (y >= LCDHEIGHT))
 		return;
@@ -390,16 +392,9 @@ static void updateBoundingBox(uint8_t xmin, uint8_t ymin, uint8_t xmax, uint8_t 
 #endif
 }
 
-pcdstruct_ptr LCDNew(){
-  pcdstruct_ptr pcd = (pcdstruct_ptr) calloc(1,sizeof(pcdstruct));
-  return pcd;
-}
-
-void LCDFree(pcdstruct_ptr pcd){
-  if(pcd->pcd8544_buffer != NULL)
-     free(pcd->pcd8544_buffer); 
-  if(pcd!=NULL)
-    free(pcd);
+void LCDNew(pcdstruct_ptr *pcd){
+  *pcd = (pcdstruct_ptr) calloc(1,sizeof(pcdstruct));
+  (*pcd)->pcd8544_buffer = calloc(1,LCDWIDTH * LCDHEIGHT / 8);
 }
 
 void LCDInit(pcdstruct_ptr pcd, uint8_t SCLK, uint8_t DIN, uint8_t DC, uint8_t CS, uint8_t RST, uint8_t contrast)
@@ -412,44 +407,48 @@ void LCDInit(pcdstruct_ptr pcd, uint8_t SCLK, uint8_t DIN, uint8_t DC, uint8_t C
 	pcd->cursor_x = pcd->cursor_y = 0;
 	pcd->textsize = 1;
 	pcd->textcolor = BLACK;
-	pcd->contrast = contrast;
-	pcd->pcd8544_buffer = calloc(1,LCDWIDTH * LCDHEIGHT / 8);
 
-	// set pin directions
-	pinMode(pcd->_din, OUTPUT);
-	pinMode(pcd->_sclk, OUTPUT);
-	pinMode(pcd->_dc, OUTPUT);
-	pinMode(pcd->_rst, OUTPUT);
 	pinMode(pcd->_cs, OUTPUT);
 
 	// toggle RST low to reset; CS low so it'll listen to us
 	if (pcd->_cs > 0)
 		digitalWrite(pcd->_cs, LOW);
 
-	digitalWrite(pcd->_rst, LOW);
-	_delay_ms(500);
-	digitalWrite(pcd->_rst, HIGH);
+	if(!doinit){
+		// set pin directions
+		pinMode(pcd->_din, OUTPUT);
+		pinMode(pcd->_sclk, OUTPUT);
+		pinMode(pcd->_dc, OUTPUT);
+		pinMode(pcd->_rst, OUTPUT);
+
+		digitalWrite(pcd->_rst, LOW);
+		_delay_ms(500);
+		digitalWrite(pcd->_rst, HIGH);
+		doinit = 1;
+	}
 
 	// get into the EXTENDED mode!
 	LCDcommand(pcd,PCD8544_FUNCTIONSET | PCD8544_EXTENDEDINSTRUCTION );
 
 	// LCD bias select (4 is optimal?)
-	LCDcommand(pcd, PCD8544_SETBIAS | 0x4);
+	LCDcommand(pcd,PCD8544_SETBIAS | 0x4);
 
 	// set VOP
 	if (pcd->contrast > 0x7f)
 		pcd->contrast = 0x7f;
 
-	LCDcommand(pcd, PCD8544_SETVOP | pcd->contrast); // Experimentally determined
+	LCDcommand(pcd, PCD8544_SETVOP | contrast); // Experimentally determined
 
 	// normal mode
-	LCDcommand(pcd, PCD8544_FUNCTIONSET);
+	LCDcommand(pcd,PCD8544_FUNCTIONSET);
 
 	// Set display to Normal
-	LCDcommand(pcd, PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYNORMAL);
+	LCDcommand(pcd,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYNORMAL);
 
 	// set up a bounding box for screen updates
 	updateBoundingBox(0, 0, LCDWIDTH-1, LCDHEIGHT-1);
+
+	digitalWrite(pcd->_cs,HIGH);
 
 }
 
@@ -743,7 +742,9 @@ uint8_t LCDgetPixel(pcdstruct_ptr pcd, uint8_t x, uint8_t y)
 
 void LCDspiwrite(pcdstruct_ptr pcd, uint8_t c)
 {
+	digitalWrite( pcd->_cs, LOW);
 	shiftOut(pcd->_din, pcd->_sclk, MSBFIRST, c);
+	digitalWrite( pcd->_cs, HIGH);
 }
 
 void LCDcommand(pcdstruct_ptr pcd, uint8_t c)
@@ -788,6 +789,7 @@ void LCDdisplay(pcdstruct_ptr pcd)
 
 		LCDcommand(pcd,PCD8544_SETYADDR | p);
 
+
 #ifdef enablePartialUpdate
 		col = xUpdateMin;
 		maxcol = xUpdateMax;
@@ -825,6 +827,13 @@ void LCDclear(pcdstruct_ptr pcd) {
 		pcd->pcd8544_buffer[i] = 0;
 	updateBoundingBox(0, 0, LCDWIDTH-1, LCDHEIGHT-1);
 	pcd->cursor_y = pcd->cursor_x = 0;
+}
+
+void LCDFree(pcdstruct_ptr pcd){
+	if(pcd->pcd8544_buffer != NULL)
+		free(pcd->pcd8544_buffer);
+	if(pcd != NULL)
+		free(pcd);
 }
 
 // bitbang serial shift out on select GPIO pin. Data rate is defined by CPU clk speed and CLKCONST_2. 

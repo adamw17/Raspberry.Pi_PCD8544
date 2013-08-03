@@ -1,6 +1,6 @@
 all: adamtest
 adamtest:
-	gcc -o adam_test adam_test.c ../PCD8544.c -I.. -L/usr/local/lib -lwiringPi
+	gcc -g3 -o adam_test adam_test.c ../PCD8544.c -I.. -L/usr/local/lib -lwiringPi
 test1:
 	gcc -o pcd8544_test pcd8544_test.c ../PCD8544.c -I.. -L/usr/local/lib -lwiringPi
 test2:

@@ -70,86 +70,88 @@ int main (void)
     exit(1);
   }
   
+  pcdstruct_ptr pcd = NULL;
   // init and clear lcd
-  LCDInit(_sclk, _din, _dc, _cs, _rst, contrast);
-  LCDclear();
+  LCDNew(&pcd);
+  LCDInit(pcd,_sclk, _din, _dc, _cs, _rst, contrast);
+  LCDclear(pcd);
 
   // turn all the pixels on (a handy test)
   printf("Test: All pixels on.\n");
-  LCDcommand(PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYALLON);
+  LCDcommand(pcd,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYALLON);
   delay(1000);
   // back to normal
   printf("Test: All pixels off.\n");
-  LCDcommand(PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYNORMAL);
-  LCDclear();
+  LCDcommand(pcd,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYNORMAL);
+  LCDclear(pcd);
   
   // display logo
   printf("Test: Display logo.\n");
-  LCDshowLogo();
+  LCDshowLogo(pcd);
   delay(2000);
-  LCDclear();
+  LCDclear(pcd);
   
   // draw a single pixel
   printf("Test: Display single pixel.\n");
-  LCDsetPixel(10, 10, BLACK);
-  LCDdisplay();
+  LCDsetPixel(pcd, 10, 10, BLACK);
+  LCDdisplay(pcd);
   delay(2000);
-  LCDclear();
+  LCDclear(pcd);
   
   // draw many lines
   printf("Test: Draw many lines.\n");
   int i;
   for (i=0; i<84; i+=4) {
-    LCDdrawline(0, 0, i, 47, BLACK);
+    LCDdrawline(pcd,0, 0, i, 47, BLACK);
   }  
   for (i=0; i<48; i+=4) {
-    LCDdrawline(0, 0, 83, i, BLACK);
+    LCDdrawline(pcd,0, 0, 83, i, BLACK);
   }
-  LCDdisplay();
+  LCDdisplay(pcd);
   delay(2000);
-  LCDclear();
+  LCDclear(pcd);
   
   // draw rectangles
   printf("Test: Draw rectangles.\n");
   for (i=0; i<48; i+=2) {
-    LCDdrawrect(i, i, 96-i, 48-i, BLACK);
+    LCDdrawrect(pcd,i, i, 96-i, 48-i, BLACK);
   }
-  LCDdisplay();
+  LCDdisplay(pcd);
   delay(2000);
-  LCDclear();
+  LCDclear(pcd);
   
   // draw multiple rectangles
   printf("Test: Draw multiple rectangles.\n");
   for (i=0; i<48; i++) {
     // alternate colors for moire effect
-    LCDfillrect(i, i, 84-i, 48-i, i%2);
+    LCDfillrect(pcd,i, i, 84-i, 48-i, i%2);
   }
-  LCDdisplay();
+  LCDdisplay(pcd);
   delay(2000);
-  LCDclear();
+  LCDclear(pcd);
   
   // draw mulitple circles
   printf("Test: Draw multiple circles.\n");
   for (i=0; i<48; i+=2) {
-    LCDdrawcircle(41, 23, i, BLACK);
+    LCDdrawcircle(pcd,41, 23, i, BLACK);
   }
-  LCDdisplay();
+  LCDdisplay(pcd);
   delay(2000);
-  LCDclear();
+  LCDclear(pcd);
   
   // draw the first ~120 characters in the font
   printf("Test: Draw the first ~120 chars.\n");
   for (i=0; i < 64; i++) {
-    LCDdrawchar((i % 14) * 6, (i/14) * 8, i);
+    LCDdrawchar(pcd,(i % 14) * 6, (i/14) * 8, i);
   }    
-  LCDdisplay();
+  LCDdisplay(pcd);
   delay(2000);
   for (i=0; i < 64; i++) {
-    LCDdrawchar((i % 14) * 6, (i/14) * 8, i + 64);
+    LCDdrawchar(pcd,(i % 14) * 6, (i/14) * 8, i + 64);
   }
-  LCDdisplay();
+  LCDdisplay(pcd);
   delay(2000);
-  LCDclear();
+  LCDclear(pcd);
   
   return 0;
 }

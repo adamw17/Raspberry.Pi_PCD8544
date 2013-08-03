@@ -72,13 +72,12 @@ typedef struct _PCDstruct{
   uint8_t textcolor;
   uint8_t contrast;
   // the memory buffer for the LCD
-  uint8_t *pcd8544_buffer;
+  uint8_t *pcd8544_buffer; 
 } pcdstruct;
 
 typedef pcdstruct * pcdstruct_ptr;
 
-
-pcdstruct_ptr LCDNew(void);
+void LCDNew(pcdstruct_ptr *pcd);
 void LCDFree(pcdstruct_ptr pcd);
  void LCDInit(pcdstruct_ptr pcd, uint8_t SCLK, uint8_t DIN, uint8_t DC, uint8_t CS, uint8_t RST, uint8_t contrast);
  void LCDcommand(pcdstruct_ptr pcd, uint8_t c);
@@ -103,5 +102,6 @@ void LCDFree(pcdstruct_ptr pcd);
  void LCDdrawstring_P(pcdstruct_ptr pcd, uint8_t x, uint8_t line, const char *c);
  void LCDdrawbitmap(pcdstruct_ptr pcd, uint8_t x, uint8_t y,  const uint8_t *bitmap, uint8_t w, uint8_t h,  uint8_t color);
  void LCDspiwrite(pcdstruct_ptr pcd, uint8_t c);
+ void LCDFree();
  void shiftOut(uint8_t dataPin, uint8_t clockPin, uint8_t bitOrder, uint8_t val);
  void _delay_ms(uint32_t t);
