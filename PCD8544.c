@@ -396,8 +396,10 @@ pcdstruct_ptr LCDNew(){
 }
 
 void LCDFree(pcdstruct_ptr pcd){
-	if(pcd!=NULL)
-		free(pcd);
+  if(pcd->pcd8544_buffer != NULL)
+     free(pcd->pcd8544_buffer); 
+  if(pcd!=NULL)
+    free(pcd);
 }
 
 void LCDInit(pcdstruct_ptr pcd, uint8_t SCLK, uint8_t DIN, uint8_t DC, uint8_t CS, uint8_t RST, uint8_t contrast)
@@ -410,6 +412,8 @@ void LCDInit(pcdstruct_ptr pcd, uint8_t SCLK, uint8_t DIN, uint8_t DC, uint8_t C
 	pcd->cursor_x = pcd->cursor_y = 0;
 	pcd->textsize = 1;
 	pcd->textcolor = BLACK;
+	pcd->contrast = contrast;
+	pcd->pcd8544_buffer = calloc(1,LCDWIDTH * LCDHEIGHT / 8);
 
 	// set pin directions
 	pinMode(pcd->_din, OUTPUT);
@@ -783,7 +787,6 @@ void LCDdisplay(pcdstruct_ptr pcd)
 #endif
 
 		LCDcommand(pcd,PCD8544_SETYADDR | p);
-
 
 #ifdef enablePartialUpdate
 		col = xUpdateMin;

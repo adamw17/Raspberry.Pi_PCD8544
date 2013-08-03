@@ -72,7 +72,7 @@ typedef struct _PCDstruct{
   uint8_t textcolor;
   uint8_t contrast;
   // the memory buffer for the LCD
-  uint8_t pcd8544_buffer[LCDWIDTH * LCDHEIGHT / 8]; // = {0,};
+  uint8_t *pcd8544_buffer;
 } pcdstruct;
 
 typedef pcdstruct * pcdstruct_ptr;
