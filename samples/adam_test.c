@@ -1,10 +1,11 @@
 /*
 =================================================================================
- Name        : pcd8544_test.c
+ Name        : multiscreen_test.c based on pcd8544_test.c
  Version     : 0.1
 
  Copyright (C) 2010 Limor Fried, Adafruit Industries
  Raspberry Pi version by Andre Wussow, 2012, desk@binerry.de
+Multiple Screen version by Adam Weber, 2013, https://github.com/adamw17/Raspberry.Pi_PCD8544
 
  Description :
      A simple PCD8544 LCD (Nokia3310/5110) test for Raspberry PI PCD8544 Library. 
@@ -22,6 +23,8 @@
 	 LCD6 - CS     P15 - GPIO3
 	 LCD7 - RST    P16 - GPIO4
 	 LCD8 - LED    P01 - 3.3V 
+
+	 For multiple screen leave all pin connections the same, but vary the chip select (CS) pin
 
 ================================================================================
 This library is free software; you can redistribute it and/or
@@ -65,16 +68,14 @@ int main (void)
   // check wiringPi setup
   if (wiringPiSetup() == -1)
   {
-	printf("wiringPi-Error\n");
+    printf("wiringPi-Error\n");
     exit(1);
   }
 
   // init and clear lcd
   LCDInit(screen1,_sclk, _din, _dc, _cs1, _rst, contrast);
   // init and clear lcd
-  LCDcommand(screen1,PCD8544_DISPLAYCONTROL | PCD8544_DISPLAYALLON);
-delay(1000);
-  LCDInit(screen2,_sclk, _din, _dc, _cs2, _rst, contrast-25);
+  LCDInit(screen2,_sclk, _din, _dc, _cs2, _rst, contrast);
 
   // turn all the pixels on (a handy test)
   printf("Test: All pixels on.\n");

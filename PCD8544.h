@@ -6,6 +6,7 @@
  Copyright (C) 2010 Limor Fried, Adafruit Industries
  CORTEX-M3 version by Le Dang Dung, 2011 LeeDangDung@gmail.com (tested on LPC1769)
  Raspberry Pi version by Andre Wussow, 2012, desk@binerry.de
+ Multiple Screen version by Adam Weber, 2013, https://github.com/adamw17/Raspberry.Pi_PCD8544
 
  Description : PCD8544 LCD library!
 

@@ -6,6 +6,7 @@
  Copyright (C) 2010 Limor Fried, Adafruit Industries
  CORTEX-M3 version by Le Dang Dung, 2011 LeeDangDung@gmail.com (tested on LPC1769)
  Raspberry Pi version by Andre Wussow, 2012, desk@binerry.de
+ Multiple Screen version by Adam Weber, 2013, https://github.com/adamw17/Raspberry.Pi_PCD8544
 
  Description :
      A simple PCD8544 LCD (Nokia3310/5110) driver. Target board is Raspberry Pi.
@@ -23,6 +24,8 @@
 	 LCD6 - CS     P15 - GPIO3
 	 LCD7 - RST    P16 - GPIO4
 	 LCD8 - LED    P01 - 3.3V 
+
+	 For multiple screens vary the chipselect pin leaving all other pin configurations alone
 
  References  :
  http://www.arduino.cc/playground/Code/PCD8544
@@ -50,10 +53,6 @@ Lesser General Public License for more details.
 
 // bit set
 #define _BV(bit) (0x1 << (bit))
-
-// LCD port variables
-/*static uint8_t cursor_x, cursor_y, textsize, textcolor;
-static int8_t _din, _sclk, _dc, _rst, _cs;*/
 
 static uint8_t doinit = 0;
 

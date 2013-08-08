@@ -7,6 +7,7 @@ Makes use of WiringPI-library of _Gordon Henderson_ (https://projects.drogon.net
 Copyright (C) 2010 _Limor Fried_, _Adafruit Industries_
 CORTEX-M3 version by _Le Dang Dung_, 2011 LeeDangDung@gmail.com (tested on LPC1769)
 Raspberry Pi version by _Andre Wussow_, 2012, desk@binerry.de
+Multiple Screen version by Adam Weber, 2013, https://github.com/adamw17/Raspberry.Pi_PCD8544
 
 For more informations please visit http://binerry.de/post/25787954149/pcd8544-library-for-raspberry-pi.
 
