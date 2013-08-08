@@ -5,6 +5,7 @@
 
  Copyright (C) 2010 Limor Fried, Adafruit Industries
  Raspberry Pi version by Andre Wussow, 2012, desk@binerry.de
+Multiple Screen version by Adam Weber, 2013, https://github.com/adamw17/Raspberry.Pi_PCD8544
 
  Description :
      A simple PCD8544 LCD (Nokia3310/5110) test for Raspberry PI PCD8544 Library. 
@@ -86,10 +87,13 @@ int main (void)
 	printf("wiringPi-Error\n");
     exit(1);
   }
+
+  pcdstruct_ptr pcd = {0};
   
+  LCDNew(&pcd);
   // init and clear lcd
-  LCDInit(_sclk, _din, _dc, _cs, _rst, contrast);
-  LCDclear();
+  LCDInit(pcd,_sclk, _din, _dc, _cs, _rst, contrast);
+  LCDclear(pcd);
 
   // turn all the pixels on (a handy test)
   uint8_t icons[NUMFLAKES][3];
@@ -106,14 +110,14 @@ int main (void)
   while (1) {
     // draw each icon
     for (f=0; f< NUMFLAKES; f++) {
-      LCDdrawbitmap(icons[f][XPOS], icons[f][YPOS], smiley, SMILEY_WIDTH, SMILEY_HEIGHT, BLACK);
+      LCDdrawbitmap(pcd,icons[f][XPOS], icons[f][YPOS], smiley, SMILEY_WIDTH, SMILEY_HEIGHT, BLACK);
     }
-    LCDdisplay();
+    LCDdisplay(pcd);
     delay(500);
     
     // then erase it + move it
     for (f=0; f< NUMFLAKES; f++) {
-      LCDdrawbitmap(icons[f][XPOS], icons[f][YPOS],  smiley, SMILEY_WIDTH, SMILEY_HEIGHT, 0);
+      LCDdrawbitmap(pcd,icons[f][XPOS], icons[f][YPOS],  smiley, SMILEY_WIDTH, SMILEY_HEIGHT, 0);
       // move it
       icons[f][YPOS] += icons[f][DELTAY];
       // if its gone, reinit
@@ -124,6 +128,9 @@ int main (void)
       }
     }
   }
+
+  //don't think we ever get here, but just in case
+  LCDFree(pcd);
   
   return 0;
 }

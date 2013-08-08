@@ -52,6 +52,7 @@ int contrast = 50;
   
 int main (void)
 {
+  pcdstruct_ptr pcd = {0};
   // print infos
   printf("Raspberry Pi PCD8544 sysinfo display\n");
   printf("========================================\n");
@@ -63,19 +64,20 @@ int main (void)
     exit(1);
   }
   
+  LCDNew(&pcd);
   // init and clear lcd
-  LCDInit(_sclk, _din, _dc, _cs, _rst, contrast);
-  LCDclear();
+  LCDInit(pcd,_sclk, _din, _dc, _cs, _rst, contrast);
+  LCDclear(pcd);
   
   // show logo
-  LCDshowLogo();
+  LCDshowLogo(pcd);
   
   delay(2000);
   
   for (;;)
   {
 	  // clear lcd
-	  LCDclear();
+	  LCDclear(pcd);
 	  
 	  // get system usage / info
 	  struct sysinfo sys_info;
@@ -100,12 +102,12 @@ int main (void)
 	  sprintf(ramInfo, "RAM %ld MB", totalRam);
 	  
 	  // build screen
-	  LCDdrawstring(0, 0, "Raspberry Pi:");
-	  LCDdrawline(0, 10, 83, 10, BLACK);
-	  LCDdrawstring(0, 12, uptimeInfo);
-	  LCDdrawstring(0, 20, cpuInfo);
-	  LCDdrawstring(0, 28, ramInfo);
-	  LCDdisplay();
+	  LCDdrawstring(pcd,0, 0, "Raspberry Pi:");
+	  LCDdrawline(pcd,0, 10, 83, 10, BLACK);
+	  LCDdrawstring(pcd,0, 12, uptimeInfo);
+	  LCDdrawstring(pcd,0, 20, cpuInfo);
+	  LCDdrawstring(pcd,0, 28, ramInfo);
+	  LCDdisplay(pcd);
 	  
 	  delay(10000);
   }
@@ -119,5 +121,6 @@ int main (void)
   //  delay(250);
   //}
 
+  LCDFree(pcd);
   return 0;
 }
